@@ -3,40 +3,44 @@ package com.gmail.tikrai.books.domain;
 import java.util.Optional;
 
 public class Book {
+  private final String barcode;
   private final String name;
   private final String author;
-  private final String barcode;
   private final int quantity;
   private final double price;
   private final Integer antiqueReleaseYear;
   private final Integer scienceIndex;
 
-  public Book(String name, String author, String barcode, int quantity, double price) {
+  public Book(String barcode, String name, String author, int quantity, double price) {
+    this.barcode = barcode;
     this.name = name;
     this.author = author;
-    this.barcode = barcode;
     this.quantity = quantity;
     this.price = price;
     this.antiqueReleaseYear = null;
     this.scienceIndex = null;
   }
 
-  private Book(
+  public Book(
+      String barcode,
       String name,
       String author,
-      String barcode,
       int quantity,
       double price,
       Integer antiqueReleaseYear,
       Integer scienceIndex
   ) {
+    this.barcode = barcode;
     this.name = name;
     this.author = author;
-    this.barcode = barcode;
     this.quantity = quantity;
     this.price = price;
     this.antiqueReleaseYear = antiqueReleaseYear;
     this.scienceIndex = scienceIndex;
+  }
+
+  public String getBarcode() {
+    return barcode;
   }
 
   public String getName() {
@@ -45,10 +49,6 @@ public class Book {
 
   public String getAuthor() {
     return author;
-  }
-
-  public String getBarcode() {
-    return barcode;
   }
 
   public int getQuantity() {
@@ -68,10 +68,10 @@ public class Book {
   }
 
   public Book withAntiqueReleaseYear(int antiqueReleaseYear) {
-    return new Book(name, author, barcode, quantity, price, antiqueReleaseYear, null);
+    return new Book(barcode, name, author, quantity, price, antiqueReleaseYear, null);
   }
 
   public Book withScienceIndex(int scienceIndex) {
-    return new Book(name, author, barcode, quantity, price, null, scienceIndex);
+    return new Book(barcode, name, author, quantity, price, null, scienceIndex);
   }
 }
