@@ -2,7 +2,6 @@ package com.gmail.tikrai.books.repository;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.repository.rowmappers.BooksMapper;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,6 @@ public class BooksRepository {
   @Autowired
   public BooksRepository(JdbcTemplate db) {
     this.db = db;
-  }
-
-  public List<Book> findAll() { //todo probably remove
-    String query = String.format("SELECT * FROM %s", TABLE);
-    return db.query(query, new BooksMapper());
   }
 
   public Optional<Book> findByBarcode(String barcode) {

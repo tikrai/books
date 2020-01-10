@@ -2,6 +2,9 @@ package com.gmail.tikrai.books.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gmail.tikrai.books.Generated;
+import com.gmail.tikrai.books.exception.ValidationException;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Book {
@@ -12,16 +15,6 @@ public class Book {
   private final double price;
   private final Integer antiqueReleaseYear;
   private final Integer scienceIndex;
-
-  public Book(String barcode, String name, String author, int quantity, double price) {
-    this.barcode = barcode;
-    this.name = name;
-    this.author = author;
-    this.quantity = quantity;
-    this.price = price;
-    this.antiqueReleaseYear = null;
-    this.scienceIndex = null;
-  }
 
   @JsonCreator
   public Book(
@@ -40,6 +33,10 @@ public class Book {
     this.price = price;
     this.antiqueReleaseYear = antiqueReleaseYear;
     this.scienceIndex = scienceIndex;
+
+    if (antiqueReleaseYear != null && scienceIndex != null ) {
+      throw new ValidationException("Book cannot be both antique and science journal");
+    }
   }
 
   @JsonProperty("barcode")
@@ -77,11 +74,28 @@ public class Book {
     return Optional.ofNullable(scienceIndex);
   }
 
-  public Book withAntiqueReleaseYear(int antiqueReleaseYear) {
-    return new Book(barcode, name, author, quantity, price, antiqueReleaseYear, null);
+  @Override
+  @Generated
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Book book = (Book) o;
+    return quantity == book.quantity &&
+        Double.compare(book.price, price) == 0 &&
+        Objects.equals(barcode, book.barcode) &&
+        Objects.equals(name, book.name) &&
+        Objects.equals(author, book.author) &&
+        Objects.equals(antiqueReleaseYear, book.antiqueReleaseYear) &&
+        Objects.equals(scienceIndex, book.scienceIndex);
   }
 
-  public Book withScienceIndex(int scienceIndex) {
-    return new Book(barcode, name, author, quantity, price, null, scienceIndex);
+  @Override
+  @Generated
+  public int hashCode() {
+    return Objects.hash(barcode, name, author, quantity, price, antiqueReleaseYear, scienceIndex);
   }
 }

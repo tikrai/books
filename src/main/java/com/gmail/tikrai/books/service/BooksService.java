@@ -3,7 +3,6 @@ package com.gmail.tikrai.books.service;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.repository.BooksRepository;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +13,6 @@ public class BooksService {
   @Autowired
   public BooksService(BooksRepository booksRepository) {
     this.booksRepository = booksRepository;
-  }
-
-  public List<Book> findAll() { //todo probably remove
-    return booksRepository.findAll();
   }
 
   public Book findByBarcode(String barcode) {

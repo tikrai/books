@@ -22,7 +22,7 @@ public class BooksController {
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Book> getByBarcode(
+  public ResponseEntity<Book> findByBarcode(
       @RequestParam String barcode
   ) {
     return new ResponseEntity<>(booksService.findByBarcode(barcode), HttpStatus.OK);
