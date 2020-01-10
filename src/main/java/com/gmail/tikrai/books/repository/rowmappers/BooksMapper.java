@@ -15,8 +15,13 @@ public class BooksMapper implements RowMapper<Book> {
         rs.getString("author"),
         rs.getInt("quantity"),
         rs.getDouble("price"),
-        rs.getInt("antique_release_year"),
-        rs.getInt("science_index")
+        getInteger(rs, "antique_release_year"),
+        getInteger(rs, "science_index")
     );
+  }
+
+  private Integer getInteger(ResultSet rs, String strColName) throws SQLException {
+    int value = rs.getInt(strColName);
+    return rs.wasNull() ? null : value;
   }
 }

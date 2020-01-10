@@ -1,5 +1,7 @@
 package com.gmail.tikrai.books.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Optional;
 
 public class Book {
@@ -21,6 +23,7 @@ public class Book {
     this.scienceIndex = null;
   }
 
+  @JsonCreator
   public Book(
       String barcode,
       String name,
@@ -39,31 +42,38 @@ public class Book {
     this.scienceIndex = scienceIndex;
   }
 
-  public String getBarcode() {
+  @JsonProperty("barcode")
+  public String barcode() {
     return barcode;
   }
 
-  public String getName() {
+  @JsonProperty("name")
+  public String name() {
     return name;
   }
 
-  public String getAuthor() {
+  @JsonProperty("author")
+  public String author() {
     return author;
   }
 
-  public int getQuantity() {
+  @JsonProperty("quantity")
+  public int quantity() {
     return quantity;
   }
 
-  public double getPrice() {
+  @JsonProperty("price")
+  public double price() {
     return price;
   }
 
-  public Optional<Integer> getAntiqueReleaseYear() {
+  @JsonProperty("antiqueReleaseYear")
+  public Optional<Integer> antiqueReleaseYear() {
     return Optional.ofNullable(antiqueReleaseYear);
   }
 
-  public Optional<Integer> getScienceIndex() {
+  @JsonProperty("scienceIndex")
+  public Optional<Integer> scienceIndex() {
     return Optional.ofNullable(scienceIndex);
   }
 
