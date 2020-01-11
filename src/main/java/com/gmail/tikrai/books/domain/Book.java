@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gmail.tikrai.books.Generated;
 import com.gmail.tikrai.books.exception.ValidationException;
+import java.util.Calendar;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,6 +38,25 @@ public class Book {
     if (antiqueReleaseYear != null && scienceIndex != null ) {
       throw new ValidationException("Book cannot be both antique and science journal");
     }
+  }
+
+  public double totalPrice() {
+    return totalAntiquePrice().map(Optional::of)
+        .orElseGet(this::totalScienceJournalPrice)
+        .orElseGet(this::totalRegularPrice);
+  }
+
+  private Optional<Double> totalAntiquePrice() {
+    int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+    return antiqueReleaseYear().map(year -> quantity * price * (currentYear - year) / 10);
+  }
+
+  private Optional<Double> totalScienceJournalPrice() {
+    return scienceIndex().map(index -> quantity * price * index);
+  }
+
+  private double totalRegularPrice() {
+    return quantity * price;
   }
 
   @JsonProperty("barcode")

@@ -22,6 +22,10 @@ public class BooksService {
         ));
   }
 
+  public Double getTotalPrice(String barcode) {
+    return findByBarcode(barcode).totalPrice();
+  }
+
   public Book create(Book book) {
     return booksRepository.create(book);
   }

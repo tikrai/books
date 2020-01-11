@@ -7,7 +7,7 @@ public class BookFixture {
   private String barcode = "1234";
   private String name = "Book Name";
   private String author = "Book Author";
-  private int quantity = 1;
+  private int quantity = 2;
   private double price = 11.1;
   private Integer antiqueReleaseYear = null;
   private Integer scienceIndex = null;

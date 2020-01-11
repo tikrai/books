@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -29,7 +30,8 @@ class BooksRepositoryTest {
 
     Optional<Book> actual = booksRepository.findByBarcode("code123");
 
-    assertEquals(Optional.of(book), actual);
+    assertThat(actual, is(Optional.of(book)));
+
     verify(db).query(anyString(), any(BooksMapper.class));
     verifyNoMoreInteractions(db);
   }
@@ -40,7 +42,7 @@ class BooksRepositoryTest {
     booksRepository.create(book);
 
     String sql = "INSERT INTO books (barcode, name, author, quantity, price, antique_release_year, "
-        + "science_index) VALUES ('1234', 'Book Name', 'Book Author', 1, 11.1, null, null)";
+        + "science_index) VALUES ('1234', 'Book Name', 'Book Author', 2, 11.1, null, null)";
     verify(db).update(sql);
     verifyNoMoreInteractions(db);
   }

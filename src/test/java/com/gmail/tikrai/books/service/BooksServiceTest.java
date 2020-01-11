@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +24,7 @@ class BooksServiceTest {
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
 
     Book actual = booksService.findByBarcode(book.barcode());
-    assertEquals(book, actual);
+    assertThat(actual, is(book));
   }
 
   @Test
@@ -38,11 +39,21 @@ class BooksServiceTest {
   }
 
   @Test
+  void shouldGetTotalPrice() {
+    Book book = Fixture.book().build();
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
+
+    Double actual = booksService.getTotalPrice(book.barcode());
+    assertThat(actual, is(book.totalPrice()));
+
+  }
+
+  @Test
   void shouldCreateBook() {
     Book book = Fixture.book().build();
     when(booksRepository.create(book)).thenReturn(book);
 
     Book actual = booksService.create(book);
-    assertEquals(book, actual);
+    assertThat(actual, is(book));
   }
 }

@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.repository.rowmappers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +39,7 @@ class BooksMapperTest {
 
     Book actual = booksMapper.mapRow(rs, 0);
 
-    assertEquals(book, actual);
+    assertThat(actual, is(book));
   }
 
   @Test
@@ -50,7 +51,7 @@ class BooksMapperTest {
 
     Book actual = booksMapper.mapRow(rs, 0);
 
-    assertEquals(book, actual);
+    assertThat(actual, is(book));
   }
 
   @AfterEach

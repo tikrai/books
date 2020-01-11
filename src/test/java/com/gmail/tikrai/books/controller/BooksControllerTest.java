@@ -1,11 +1,13 @@
 package com.gmail.tikrai.books.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.fixture.Fixture;
+import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,19 @@ class BooksControllerTest {
     ResponseEntity<Book> actual = booksController.findByBarcode(book.barcode());
 
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
-    assertEquals(expected, actual);
+    assertThat(actual, is(expected));
+
+  }
+
+  @Test
+  void shouldGetTotalPrice() {
+    when(booksService.getTotalPrice(book.barcode())).thenReturn(book.totalPrice());
+
+    ResponseEntity<TotalPriceResponse> actual = booksController.getTotalPrice(book.barcode());
+
+    ResponseEntity<TotalPriceResponse> expected =
+        new ResponseEntity<>(new TotalPriceResponse(book.totalPrice()), HttpStatus.OK);
+    assertThat(actual, is(expected));
   }
 
   @Test
@@ -34,6 +48,6 @@ class BooksControllerTest {
     ResponseEntity<Book> actual = booksController.create(book);
 
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.CREATED);
-    assertEquals(expected, actual);
+    assertThat(actual, is(expected));
   }
 }
