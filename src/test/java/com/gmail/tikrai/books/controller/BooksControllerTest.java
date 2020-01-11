@@ -16,7 +16,7 @@ class BooksControllerTest {
   private final BooksService booksService = mock(BooksService.class);
   private final BooksController booksController = new BooksController(booksService);
   private final Book book = Fixture.book().build();
-dfbtbsdt
+
   @Test
   void shouldFindByBarcode() {
     when(booksService.findByBarcode(book.barcode())).thenReturn(book);
