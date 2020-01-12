@@ -2,6 +2,7 @@ package com.gmail.tikrai.books.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +11,6 @@ import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import com.gmail.tikrai.books.repository.BooksRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class BooksServiceTest {
@@ -32,7 +32,7 @@ class BooksServiceTest {
     Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.empty());
 
-    Assertions.assertThrows(
+    assertThrows(
         ResourceNotFoundException.class,
         () -> booksService.findByBarcode(book.barcode())
     );
@@ -45,7 +45,6 @@ class BooksServiceTest {
 
     Double actual = booksService.getTotalPrice(book.barcode());
     assertThat(actual, is(book.totalPrice()));
-
   }
 
   @Test
@@ -54,6 +53,25 @@ class BooksServiceTest {
     when(booksRepository.create(book)).thenReturn(book);
 
     Book actual = booksService.create(book);
+    assertThat(actual, is(book));
+  }
+
+  @Test
+  void shouldUpdateBook() {
+    Book book = Fixture.book().build();
+    when(booksRepository.update(book.barcode(), book)).thenReturn(book);
+
+    Book actual = booksService.update(book.barcode(), book);
+    assertThat(actual, is(book));
+  }
+
+  @Test
+  void shouldUpdateBookField() {
+    Book book = Fixture.book().build();
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
+    when(booksRepository.update(book.barcode(), book)).thenReturn(book);
+
+    Book actual = booksService.updateField(book.barcode(), "author", book.author());
     assertThat(actual, is(book));
   }
 }

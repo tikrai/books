@@ -41,8 +41,20 @@ class BooksRepositoryTest {
     Book book = Fixture.book().build();
     booksRepository.create(book);
 
-    String sql = "INSERT INTO books (barcode, name, author, quantity, price, antique_release_year, "
-        + "science_index) VALUES ('1234', 'Book Name', 'Book Author', 2, 11.1, null, null)";
+    String sql = "INSERT INTO books "
+        + "VALUES ('1234', 'Book Name', 'Book Author', 2, 11.1, null, null)";
+    verify(db).update(sql);
+    verifyNoMoreInteractions(db);
+  }
+
+  @Test
+  void shouldUpdateBook() {
+    Book book = Fixture.book().build();
+    booksRepository.update(book.barcode(), book);
+
+    String sql = "UPDATE books "
+        + "SET (name, author, quantity, price, antique_release_year, science_index) = "
+        + "('Book Name', 'Book Author', 2, 11.100000, null, null) WHERE barcode = '1234'";
     verify(db).update(sql);
     verifyNoMoreInteractions(db);
   }

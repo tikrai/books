@@ -3,9 +3,11 @@ package com.gmail.tikrai.books.domain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import java.util.Calendar;
 import java.util.Set;
@@ -25,9 +27,11 @@ class BookTest {
       + "\"author\":\"Book Author\",\"quantity\":2,\"price\":11.1,\"antiqueReleaseYear\":1600}";
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+  private final Book book = Fixture.book().build();
+
+
   @Test
   void shouldSerializeRegularBook() throws JsonProcessingException {
-    Book book = Fixture.book().build();
     String serialized = mapper.writeValueAsString(book);
     assertThat(serialized, is(bookJson));
   }
@@ -35,7 +39,7 @@ class BookTest {
   @Test
   void shouldDeserializeRegularBook() throws JsonProcessingException {
     Book deserialized = mapper.readValue(bookJson, Book.class);
-    assertThat(deserialized, is(Fixture.book().build()));
+    assertThat(deserialized, is(book));
   }
 
   @Test
@@ -53,7 +57,6 @@ class BookTest {
 
   @Test
   void shouldCalculateTotalPriceOfRegularBook() {
-    Book book = Fixture.book().build();
     assertThat(book.totalPrice(), is(book.quantity() * book.price()));
   }
 
@@ -75,8 +78,85 @@ class BookTest {
   }
 
   @Test
+  void shouldFailToUpdateBarcodeField() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> book.withUpdatedField("barcode", "new barcode")
+    ).getMessage();
+    assertThat(message, is("Barcode can not be updated"));
+  }
+
+  @Test
+  void shouldUpdateNameField() {
+    String newName = "new name";
+    Book actual = book.withUpdatedField("name", newName);
+    assertThat(actual, is(Fixture.book().name(newName).build()));
+  }
+
+  @Test
+  void shouldUpdateAuthorField() {
+    String newAuthor = "new author";
+    Book actual = book.withUpdatedField("author", newAuthor);
+    assertThat(actual, is(Fixture.book().author(newAuthor).build()));
+  }
+
+  @Test
+  void shouldUpdateQuantityField() {
+    int newQuantity = 150;
+    Book actual = book.withUpdatedField("quantity", newQuantity);
+    assertThat(actual, is(Fixture.book().quantity(newQuantity).build()));
+  }
+
+  @Test
+  void shouldUpdatePriceField() {
+    double newPrice = 16.0;
+    Book actual = book.withUpdatedField("price", newPrice);
+    assertThat(actual, is(Fixture.book().price(newPrice).build()));
+  }
+
+  @Test
+  void shouldUpdateAntiqueReleaseYearField() {
+    int newAntiqueReleaseYear = 150;
+    Book actual = book.withUpdatedField("antiqueReleaseYear", newAntiqueReleaseYear);
+    assertThat(actual, is(Fixture.book().antiqueReleaseYear(newAntiqueReleaseYear).build()));
+  }
+
+  @Test
+  void shouldUpdateScienceIndexField() {
+    int newScienceIndex = 9;
+    Book actual = book.withUpdatedField("scienceIndex", newScienceIndex);
+    assertThat(actual, is(Fixture.book().scienceIndex(newScienceIndex).build()));
+  }
+
+  @Test
+  void shouldFailToUpdateNonExistingField() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> book.withUpdatedField("model", "new model")
+    ).getMessage();
+    assertThat(message, is("Book has no field 'model'"));
+  }
+
+  @Test
+  void shouldFailToUpdateProvidingDataOfWrongType() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> book.withUpdatedField("price", "1.0")
+    ).getMessage();
+    assertThat(message, is("Incorrect format of 'price' field"));
+  }
+
+  @Test
+  void shouldFailToUpdateProvidingInvalidValue() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> book.withUpdatedField("price", -1.0)
+    ).getMessage();
+    assertThat(message, is("price must be greater than or equal to 0"));
+  }
+
+  @Test
   void shouldValidateRegularBookSuccessfully() {
-    Book book = Fixture.book().build();
     Set<ConstraintViolation<Book>> violations = validator.validate(book);
     assertThat(violations, empty());
   }

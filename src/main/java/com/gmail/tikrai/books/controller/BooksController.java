@@ -3,13 +3,16 @@ package com.gmail.tikrai.books.controller;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,5 +41,22 @@ public class BooksController {
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Book> create(@Valid @RequestBody Book book) {
     return new ResponseEntity<>(booksService.create(book), HttpStatus.CREATED);
+  }
+
+  @PutMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Book> update(
+      @PathVariable String barcode,
+      @Valid @RequestBody Book book
+  ) {
+    return new ResponseEntity<>(booksService.update(barcode, book), HttpStatus.OK);
+  }
+
+  @PatchMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Book> updateField(
+      @PathVariable("barcode") String barcode,
+      @RequestBody Map.Entry<String, Object> update
+  ) {
+    Book updated = booksService.updateField(barcode, update.getKey(), update.getValue());
+    return new ResponseEntity<>(updated, HttpStatus.OK);
   }
 }

@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 public class BooksRepository {
 
   private static final String TABLE = "books";
+  private static final String BARCODE = "barcode";
+  private static final String NAME = "name";
+  private static final String AUTHOR = "author";
+  private static final String QUANTITY = "quantity";
+  private static final String PRICE = "price";
+  private static final String ANTIQUE_RELEASE_YEAR = "antique_release_year";
+  private static final String SCIENCE_INDEX = "science_index";
 
   private final JdbcTemplate db;
 
@@ -27,10 +34,7 @@ public class BooksRepository {
 
   public Book create(Book book) {
     String sql = String.format(
-        "INSERT INTO %s ("
-            + "barcode, name, author, quantity, price"
-            + ", antique_release_year, science_index"
-            + ") VALUES ('%s', '%s', '%s', %s, %s, %s, %s)",
+        "INSERT INTO %s VALUES ('%s', '%s', '%s', %s, %s, %s, %s)",
         TABLE,
         book.barcode(),
         book.name(),
@@ -41,7 +45,26 @@ public class BooksRepository {
         book.scienceIndex().orElse(null)
     );
     db.update(sql);
+    return book;
+  }
 
+  public Book update(String barcode, Book book) {
+    String fields =
+        String.join(", ", NAME, AUTHOR, QUANTITY, PRICE, ANTIQUE_RELEASE_YEAR, SCIENCE_INDEX);
+    String sql = String.format(
+        "UPDATE %s SET (%s) = "
+            + "('%s', '%s', %d, %f, %d, %d) WHERE barcode = '%s'",
+        TABLE,
+        fields,
+        book.name(),
+        book.author(),
+        book.quantity(),
+        book.price(),
+        book.antiqueReleaseYear().orElse(null),
+        book.scienceIndex().orElse(null),
+        barcode
+    );
+    db.update(sql);
     return book;
   }
 }

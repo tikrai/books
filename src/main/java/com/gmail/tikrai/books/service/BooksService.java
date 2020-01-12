@@ -29,4 +29,13 @@ public class BooksService {
   public Book create(Book book) {
     return booksRepository.create(book);
   }
+
+  public Book update(String barcode, Book book) {
+    return booksRepository.update(barcode, book);
+  }
+
+  public Book updateField(String barcode, String fieldName, Object value) {
+    Book updated = findByBarcode(barcode).withUpdatedField(fieldName, value);
+    return update(barcode, updated);
+  }
 }
