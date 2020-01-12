@@ -3,18 +3,36 @@ package com.gmail.tikrai.books.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gmail.tikrai.books.Generated;
-import com.gmail.tikrai.books.exception.ValidationException;
+import com.gmail.tikrai.books.validators.NotAntiqueScienceBook;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
+@NotAntiqueScienceBook
 public class Book {
+  @Length(min = 2, max = 255)
   private final String barcode;
+
+  @Length(min = 2, max = 255)
   private final String name;
+
+  @Length(min = 2, max = 255)
   private final String author;
+
+  @Min(1)
   private final int quantity;
+
+  @Min(0)
   private final double price;
+
+  @Max(1900)
   private final Integer antiqueReleaseYear;
+
+  @Range(min = 1, max = 10)
   private final Integer scienceIndex;
 
   @JsonCreator
@@ -34,10 +52,6 @@ public class Book {
     this.price = price;
     this.antiqueReleaseYear = antiqueReleaseYear;
     this.scienceIndex = scienceIndex;
-
-    if (antiqueReleaseYear != null && scienceIndex != null ) {
-      throw new ValidationException("Book cannot be both antique and science journal");
-    }
   }
 
   public double totalPrice() {
