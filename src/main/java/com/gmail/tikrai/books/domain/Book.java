@@ -187,13 +187,13 @@ public class Book {
       return false;
     }
     Book book = (Book) o;
-    return quantity == book.quantity &&
-        Double.compare(book.price, price) == 0 &&
-        Objects.equals(barcode, book.barcode) &&
-        Objects.equals(name, book.name) &&
-        Objects.equals(author, book.author) &&
-        Objects.equals(antiqueReleaseYear, book.antiqueReleaseYear) &&
-        Objects.equals(scienceIndex, book.scienceIndex);
+    return quantity == book.quantity
+        && Double.compare(book.price, price) == 0
+        && Objects.equals(barcode, book.barcode)
+        && Objects.equals(name, book.name)
+        && Objects.equals(author, book.author)
+        && Objects.equals(antiqueReleaseYear, book.antiqueReleaseYear)
+        && Objects.equals(scienceIndex, book.scienceIndex);
   }
 
   @Override

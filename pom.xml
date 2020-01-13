@@ -12,11 +12,15 @@
 	<artifactId>books</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>books</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Book storage application</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<jacoco.version>0.8.5</jacoco.version></properties>
+		<checkstyle.version>3.1.0</checkstyle.version>
+		<pmd.version>3.12.0</pmd.version>
+		<findbugs.version>3.0.5</findbugs.version>
+		<jacoco.version>0.8.5</jacoco.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -56,6 +60,58 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.version}</version>
+				<configuration>
+					<configLocation>src/main/resources/code-style.xml</configLocation>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>true</failsOnError>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>    <!-- checkstyle -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>${pmd.version}</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+							<goal>cpd-check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>    <!-- pmd -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>${findbugs.version}</version>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<omitVisitors>FindNullDeref</omitVisitors>
+					<effort>Max</effort>
+				</configuration>
+			</plugin>    <!-- findbugs -->
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
@@ -76,5 +132,4 @@
 			</plugin>    <!-- jacoco -->
 		</plugins>
 	</build>
-
 </project>
