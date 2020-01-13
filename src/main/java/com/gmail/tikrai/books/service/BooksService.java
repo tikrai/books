@@ -2,6 +2,7 @@ package com.gmail.tikrai.books.service;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
+import com.gmail.tikrai.books.exception.UniqueIdentifierException;
 import com.gmail.tikrai.books.repository.BooksRepository;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class BooksService {
   public Book findByBarcode(String barcode) {
     return booksRepository.findByBarcode(barcode)
         .orElseThrow(() -> new ResourceNotFoundException(
-            String.format("Book with barcode: %s was not found", barcode)
+            String.format("Book with barcode '%s' was not found", barcode)
         ));
   }
 
@@ -29,15 +30,25 @@ public class BooksService {
   }
 
   public Book create(Book book) {
+    if (booksRepository.findByBarcode(book.barcode()).isPresent()) {
+      throw new UniqueIdentifierException(
+          String.format("Book with barcode '%s' already exists", book.barcode())
+      );
+    }
     return booksRepository.create(book);
   }
 
   public Book update(String barcode, Book book) {
-    return booksRepository.update(barcode, book);
+    findByBarcode(barcode);
+    return makeUpdate(barcode, book);
   }
 
   public Book updateFields(String barcode, Map<String, Object> updates) {
     Book updated = findByBarcode(barcode).withUpdatedFields(updates);
-    return update(barcode, updated);
+    return makeUpdate(barcode, updated);
+  }
+
+  private Book makeUpdate(String barcode, Book book) {
+    return booksRepository.update(barcode, book);
   }
 }

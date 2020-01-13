@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
+import com.gmail.tikrai.books.exception.UniqueIdentifierException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import com.gmail.tikrai.books.repository.BooksRepository;
 import java.math.BigDecimal;
@@ -39,10 +40,12 @@ class BooksServiceTest {
     Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.empty());
 
-    assertThrows(
+    String message = assertThrows(
         ResourceNotFoundException.class,
         () -> booksService.findByBarcode(book.barcode())
-    );
+    ).getMessage();
+    String expectedMessage = String.format("Book with barcode '%s' was not found", book.barcode());
+    assertThat(message, is(expectedMessage));
     verify(booksRepository).findByBarcode(book.barcode());
     verifyNoMoreInteractions(booksRepository);
   }
@@ -68,6 +71,24 @@ class BooksServiceTest {
 
     assertThat(actual, is(book));
     verify(booksRepository).create(book);
+    verify(booksRepository).findByBarcode(book.barcode());
+    verifyNoMoreInteractions(booksRepository);
+  }
+
+  @Test
+  void shouldFailToCreateBookIfBarcodeAlreadyExists() {
+    Book book = Fixture.book().build();
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
+    when(booksRepository.create(book)).thenReturn(book);
+
+    String message = assertThrows(
+        UniqueIdentifierException.class,
+        () -> booksService.create(book)
+    ).getMessage();
+
+    String expectedMessage = String.format("Book with barcode '%s' already exists", book.barcode());
+    assertThat(message, is(expectedMessage));
+    verify(booksRepository).findByBarcode(book.barcode());
     verifyNoMoreInteractions(booksRepository);
   }
 
@@ -75,10 +96,12 @@ class BooksServiceTest {
   void shouldUpdateBook() {
     Book book = Fixture.book().build();
     when(booksRepository.update(book.barcode(), book)).thenReturn(book);
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
 
     Book actual = booksService.update(book.barcode(), book);
 
     assertThat(actual, is(book));
+    verify(booksRepository).findByBarcode(book.barcode());
     verify(booksRepository).update(book.barcode(), book);
     verifyNoMoreInteractions(booksRepository);
   }

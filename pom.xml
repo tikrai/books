@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.2.2.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.gmail.tikrai</groupId>
 	<artifactId>books</artifactId>
@@ -38,6 +38,12 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.restassured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>2.9.0</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -73,7 +79,7 @@
 				<executions>
 					<execution>
 						<id>validate</id>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -86,7 +92,7 @@
 				<version>${pmd.version}</version>
 				<executions>
 					<execution>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 							<goal>cpd-check</goal>
@@ -100,7 +106,7 @@
 				<version>${findbugs.version}</version>
 				<executions>
 					<execution>
-						<phase>compile</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -130,6 +136,39 @@
 					</execution>
 				</executions>
 			</plugin>    <!-- jacoco -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.12</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>process-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>   <!-- set integration test sources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M4</version>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>  <!-- run integration tests -->
 		</plugins>
 	</build>
 </project>

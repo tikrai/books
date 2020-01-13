@@ -1,19 +1,18 @@
 package com.gmail.tikrai.books.repository;
 
 import com.gmail.tikrai.books.domain.Book;
-import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.repository.rowmappers.BooksMapper;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BooksRepository {
 
-  private static final String TABLE = "books";
+  public static final String TABLE = "books";
   private static final String NAME = "name";
   private static final String AUTHOR = "author";
   private static final String QUANTITY = "quantity";
@@ -27,6 +26,11 @@ public class BooksRepository {
   @Autowired
   public BooksRepository(JdbcTemplate db) {
     this.db = db;
+  }
+
+  public List<Book> findAll() {
+    String sql = String.format("SELECT * FROM %s", TABLE);
+    return db.query(sql, new BooksMapper());
   }
 
   public Optional<Book> findByBarcode(String barcode) {
@@ -46,11 +50,7 @@ public class BooksRepository {
         book.antiqueReleaseYear().orElse(null),
         book.scienceIndex().orElse(null)
     );
-    try {
-      db.update(sql);
-    } catch (DataAccessException e) {
-      throw new ValidationException(e.getCause().getMessage());
-    }
+    db.update(sql);
     return book;
   }
 

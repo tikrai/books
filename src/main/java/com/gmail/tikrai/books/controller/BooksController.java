@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.controller;
 
 import com.gmail.tikrai.books.domain.Book;
+import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import com.gmail.tikrai.books.util.RestUtil.Endpoint;
@@ -49,6 +50,10 @@ public class BooksController {
       @PathVariable String barcode,
       @Valid @RequestBody Book book
   ) {
+    if (!book.barcode().equals(barcode)) {
+      throw new ValidationException("Modification of 'barcode' field is not allowed");
+    }
+
     return new ResponseEntity<>(booksService.update(barcode, book), HttpStatus.OK);
   }
 

@@ -2,12 +2,14 @@ package com.gmail.tikrai.books.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.gmail.tikrai.books.domain.Book;
+import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
@@ -68,6 +70,18 @@ class BooksControllerTest {
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
     assertThat(actual, is(expected));
     verify(booksService).update(book.barcode(), book);
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
+  void shouldFailToUpdateBookIfBarcodeModificationRequested() {
+    String oldBarcode = "b000";
+
+    String message = assertThrows(
+        ValidationException.class,
+        () -> booksController.update(oldBarcode, book)
+    ).getMessage();
+    assertThat(message, is("Modification of 'barcode' field is not allowed"));
     verifyNoMoreInteractions(booksService);
   }
 
