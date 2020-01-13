@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.fixture;
 
 import com.gmail.tikrai.books.domain.Book;
+import java.math.BigDecimal;
 
 public class BookFixture {
 
@@ -8,7 +9,7 @@ public class BookFixture {
   private String name = "Book Name";
   private String author = "Book Author";
   private int quantity = 2;
-  private double price = 11.1;
+  private BigDecimal price = BigDecimal.valueOf(11.10);
   private Integer antiqueReleaseYear = null;
   private Integer scienceIndex = null;
 
@@ -33,7 +34,7 @@ public class BookFixture {
   }
 
   public BookFixture price(double price) {
-    this.price = price;
+    this.price = BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_HALF_UP);
     return this;
   }
 

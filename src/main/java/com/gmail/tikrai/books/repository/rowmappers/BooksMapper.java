@@ -1,6 +1,7 @@
 package com.gmail.tikrai.books.repository.rowmappers;
 
 import com.gmail.tikrai.books.domain.Book;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +15,7 @@ public class BooksMapper implements RowMapper<Book> {
         rs.getString("name"),
         rs.getString("author"),
         rs.getInt("quantity"),
-        rs.getDouble("price"),
+        BigDecimal.valueOf(rs.getInt("price"), 2),
         getInteger(rs, "antique_release_year"),
         getInteger(rs, "science_index")
     );

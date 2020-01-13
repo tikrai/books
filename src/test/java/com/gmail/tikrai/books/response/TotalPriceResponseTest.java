@@ -6,13 +6,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.tikrai.books.fixture.Fixture;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 class TotalPriceResponseTest {
 
   private final ObjectMapper mapper = Fixture.mapper();
-  private final TotalPriceResponse price = new TotalPriceResponse(1.0);
-  private final String priceJson = "{\"totalPrice\":1.0}";
+  private final TotalPriceResponse price = new TotalPriceResponse(BigDecimal.valueOf(1));
+  private final String priceJson = "{\"totalPrice\":1.00}";
 
   @Test
   void shouldSerializeRegularBook() throws JsonProcessingException {

@@ -3,19 +3,20 @@ package com.gmail.tikrai.books.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gmail.tikrai.books.util.Generated;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class TotalPriceResponse {
 
-  private final double totalPrice;
+  private final BigDecimal totalPrice;
 
   @JsonCreator
-  public TotalPriceResponse(double totalPrice) {
-    this.totalPrice = totalPrice;
+  public TotalPriceResponse(BigDecimal totalPrice) {
+    this.totalPrice = totalPrice.setScale(2, BigDecimal.ROUND_HALF_UP);
   }
 
   @JsonProperty("totalPrice")
-  public double totalPrice() {
+  public BigDecimal totalPrice() {
     return totalPrice;
   }
 
@@ -29,7 +30,7 @@ public class TotalPriceResponse {
       return false;
     }
     TotalPriceResponse that = (TotalPriceResponse) o;
-    return Double.compare(that.totalPrice, totalPrice) == 0;
+    return Objects.equals(totalPrice, that.totalPrice);
   }
 
   @Override

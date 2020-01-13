@@ -12,6 +12,7 @@ import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import com.gmail.tikrai.books.repository.BooksRepository;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class BooksServiceTest {
     Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
 
-    Double actual = booksService.getTotalPrice(book.barcode());
+    BigDecimal actual = booksService.getTotalPrice(book.barcode());
 
     assertThat(actual, is(book.totalPrice()));
     verify(booksRepository).findByBarcode(book.barcode());

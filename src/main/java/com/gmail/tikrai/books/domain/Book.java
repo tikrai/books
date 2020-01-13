@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.util.Generated;
 import com.gmail.tikrai.books.validators.NotAntiqueScienceBook;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class Book {
   private final int quantity;
 
   @Min(0)
-  private final double price;
+  private final BigDecimal price;
 
   @Max(1900)
   private final Integer antiqueReleaseYear;
@@ -44,7 +45,7 @@ public class Book {
       String name,
       String author,
       int quantity,
-      double price,
+      BigDecimal price,
       Integer antiqueReleaseYear,
       Integer scienceIndex
   ) {
@@ -52,28 +53,29 @@ public class Book {
     this.name = name;
     this.author = author;
     this.quantity = quantity;
-    this.price = price;
+    this.price = price.setScale(2, BigDecimal.ROUND_HALF_UP);
     this.antiqueReleaseYear = antiqueReleaseYear;
     this.scienceIndex = scienceIndex;
   }
 
-  public double totalPrice() {
+  public BigDecimal totalPrice() {
     return totalAntiquePrice().map(Optional::of)
         .orElseGet(this::totalScienceJournalPrice)
         .orElseGet(this::totalRegularPrice);
   }
 
-  private Optional<Double> totalAntiquePrice() {
+  private Optional<BigDecimal> totalAntiquePrice() {
     int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-    return antiqueReleaseYear().map(year -> quantity * price * (currentYear - year) / 10);
+    return antiqueReleaseYear()
+        .map(year -> price.multiply(BigDecimal.valueOf(quantity * (currentYear - year) / 10.0)));
   }
 
-  private Optional<Double> totalScienceJournalPrice() {
-    return scienceIndex().map(index -> quantity * price * index);
+  private Optional<BigDecimal> totalScienceJournalPrice() {
+    return scienceIndex().map(index -> price.multiply(BigDecimal.valueOf(quantity * index)));
   }
 
-  private double totalRegularPrice() {
-    return quantity * price;
+  private BigDecimal totalRegularPrice() {
+    return price.multiply(BigDecimal.valueOf(quantity));
   }
 
   public Book withUpdatedFields(Map<String, Object> updates) {
@@ -101,7 +103,7 @@ public class Book {
           book = withQuantity((int) value);
           break;
         case "price":
-          book = withPrice((double) value);
+          book = withPrice(BigDecimal.valueOf((double) value));
           break;
         case "antiqueReleaseYear":
           book = withAntiqueReleaseYear((int) value);
@@ -148,7 +150,7 @@ public class Book {
   }
 
   @JsonProperty("price")
-  public double price() {
+  public BigDecimal price() {
     return price;
   }
 
@@ -174,7 +176,7 @@ public class Book {
     return new Book(barcode, name, author, quantity, price, antiqueReleaseYear, scienceIndex);
   }
 
-  private Book withPrice(double price) {
+  private Book withPrice(BigDecimal price) {
     return new Book(barcode, name, author, quantity, price, antiqueReleaseYear, scienceIndex);
   }
 
@@ -197,10 +199,10 @@ public class Book {
     }
     Book book = (Book) o;
     return quantity == book.quantity
-        && Double.compare(book.price, price) == 0
         && Objects.equals(barcode, book.barcode)
         && Objects.equals(name, book.name)
         && Objects.equals(author, book.author)
+        && Objects.equals(price, book.price)
         && Objects.equals(antiqueReleaseYear, book.antiqueReleaseYear)
         && Objects.equals(scienceIndex, book.scienceIndex);
   }

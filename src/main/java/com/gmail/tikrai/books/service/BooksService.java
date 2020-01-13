@@ -3,6 +3,7 @@ package com.gmail.tikrai.books.service;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.repository.BooksRepository;
+import java.math.BigDecimal;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class BooksService {
         ));
   }
 
-  public Double getTotalPrice(String barcode) {
+  public BigDecimal getTotalPrice(String barcode) {
     return findByBarcode(barcode).totalPrice();
   }
 

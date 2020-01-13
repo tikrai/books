@@ -23,7 +23,7 @@ public class DbInitListener implements ApplicationListener<ContextRefreshedEvent
         + "   name VARCHAR (255) NOT NULL,"
         + "   author VARCHAR (255) NOT NULL,"
         + "   quantity INTEGER NOT NULL,"
-        + "   price REAL NOT NULL,"
+        + "   price INTEGER NOT NULL,"
         + "   antique_release_year INTEGER,"
         + "   science_index INTEGER"
         + ");";

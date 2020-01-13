@@ -42,7 +42,7 @@ public class BooksRepository {
         book.name(),
         book.author(),
         book.quantity(),
-        book.price(),
+        book.price().unscaledValue(),
         book.antiqueReleaseYear().orElse(null),
         book.scienceIndex().orElse(null)
     );
@@ -56,13 +56,13 @@ public class BooksRepository {
 
   public Book update(String barcode, Book book) {
     String sql = String.format(
-        "UPDATE %s SET (%s) = ('%s', '%s', %d, %f, %d, %d) WHERE barcode = '%s'",
+        "UPDATE %s SET (%s) = ('%s', '%s', %d, %d, %d, %d) WHERE barcode = '%s'",
         TABLE,
         DATA_FIELDS,
         book.name(),
         book.author(),
         book.quantity(),
-        book.price(),
+        book.price().unscaledValue(),
         book.antiqueReleaseYear().orElse(null),
         book.scienceIndex().orElse(null),
         barcode

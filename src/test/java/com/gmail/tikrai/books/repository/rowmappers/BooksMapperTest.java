@@ -28,7 +28,7 @@ class BooksMapperTest {
     when(rs.getString("name")).thenReturn(book.name());
     when(rs.getString("author")).thenReturn(book.author());
     when(rs.getInt("quantity")).thenReturn(book.quantity());
-    when(rs.getDouble("price")).thenReturn(book.price());
+    when(rs.getInt("price")).thenReturn(book.price().unscaledValue().intValue());
     when(rs.getInt("antique_release_year")).thenReturn(0);
   }
 
@@ -60,7 +60,7 @@ class BooksMapperTest {
     verify(rs).getString("name");
     verify(rs).getString("author");
     verify(rs).getInt("quantity");
-    verify(rs).getDouble("price");
+    verify(rs).getInt("price");
     verify(rs).getInt("antique_release_year");
     verify(rs).getInt("science_index");
     verify(rs, times(2)).wasNull();
