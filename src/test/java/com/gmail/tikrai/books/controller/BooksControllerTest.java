@@ -11,8 +11,7 @@ import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.fixture.Fixture;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
-import java.util.AbstractMap;
-import java.util.Map;
+import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,15 +74,17 @@ class BooksControllerTest {
   @Test
   void shouldUpdateBookField() {
     String fieldName = "name";
-    String value = "New Name";
-    Map.Entry<String, Object> update = new AbstractMap.SimpleEntry<>(fieldName, value);
-    when(booksService.updateField(book.barcode(), fieldName, value)).thenReturn(book);
+    String fieldValue = "New Name";
+    HashMap<String, Object> updates = new HashMap<String, Object>() {{
+      put(fieldName, fieldValue);
+    }};
+    when(booksService.updateFields(book.barcode(), updates)).thenReturn(book);
 
-    ResponseEntity<Book> actual = booksController.updateField(book.barcode(), update);
+    ResponseEntity<Book> actual = booksController.updateField(book.barcode(), updates);
 
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
     assertThat(actual, is(expected));
-    verify(booksService).updateField(book.barcode(), fieldName, value);
+    verify(booksService).updateFields(book.barcode(), updates);
     verifyNoMoreInteractions(booksService);
   }
 }

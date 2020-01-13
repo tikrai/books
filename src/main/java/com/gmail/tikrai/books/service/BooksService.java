@@ -3,6 +3,7 @@ package com.gmail.tikrai.books.service;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.repository.BooksRepository;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +35,8 @@ public class BooksService {
     return booksRepository.update(barcode, book);
   }
 
-  public Book updateField(String barcode, String fieldName, Object value) {
-    Book updated = findByBarcode(barcode).withUpdatedField(fieldName, value);
+  public Book updateFields(String barcode, Map<String, Object> updates) {
+    Book updated = findByBarcode(barcode).withUpdatedFields(updates);
     return update(barcode, updated);
   }
 }

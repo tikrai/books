@@ -10,10 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.fixture.Fixture;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class BookTest {
@@ -28,7 +30,13 @@ class BookTest {
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   private final Book book = Fixture.book().build();
+  private final HashMap<String, Object> updates = new HashMap<>();
 
+
+  @BeforeEach
+  void setup()  {
+    updates.clear();
+  }
 
   @Test
   void shouldSerializeRegularBook() throws JsonProcessingException {
@@ -79,9 +87,10 @@ class BookTest {
 
   @Test
   void shouldFailToUpdateBarcodeField() {
+    updates.put("barcode", "new barcode");
     String message = assertThrows(
         ValidationException.class,
-        () -> book.withUpdatedField("barcode", "new barcode")
+        () -> book.withUpdatedFields(updates)
     ).getMessage();
     assertThat(message, is("Barcode can not be updated"));
   }
@@ -89,70 +98,104 @@ class BookTest {
   @Test
   void shouldUpdateNameField() {
     String newName = "new name";
-    Book actual = book.withUpdatedField("name", newName);
+    updates.put("name", newName);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().name(newName).build()));
   }
 
   @Test
   void shouldUpdateAuthorField() {
     String newAuthor = "new author";
-    Book actual = book.withUpdatedField("author", newAuthor);
+    updates.put("author", newAuthor);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().author(newAuthor).build()));
   }
 
   @Test
   void shouldUpdateQuantityField() {
     int newQuantity = 150;
-    Book actual = book.withUpdatedField("quantity", newQuantity);
+    updates.put("quantity", newQuantity);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().quantity(newQuantity).build()));
   }
 
   @Test
   void shouldUpdatePriceField() {
     double newPrice = 16.0;
-    Book actual = book.withUpdatedField("price", newPrice);
+    updates.put("price", newPrice);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().price(newPrice).build()));
   }
 
   @Test
   void shouldUpdateAntiqueReleaseYearField() {
     int newAntiqueReleaseYear = 150;
-    Book actual = book.withUpdatedField("antiqueReleaseYear", newAntiqueReleaseYear);
+    updates.put("antiqueReleaseYear", newAntiqueReleaseYear);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().antiqueReleaseYear(newAntiqueReleaseYear).build()));
   }
 
   @Test
   void shouldUpdateScienceIndexField() {
     int newScienceIndex = 9;
-    Book actual = book.withUpdatedField("scienceIndex", newScienceIndex);
+    updates.put("scienceIndex", newScienceIndex);
+    Book actual = book.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.book().scienceIndex(newScienceIndex).build()));
   }
 
   @Test
   void shouldFailToUpdateNonExistingField() {
+    updates.put("model", "new model");
     String message = assertThrows(
         ValidationException.class,
-        () -> book.withUpdatedField("model", "new model")
+        () -> book.withUpdatedFields(updates)
     ).getMessage();
     assertThat(message, is("Book has no field 'model'"));
   }
 
   @Test
   void shouldFailToUpdateProvidingDataOfWrongType() {
+    updates.put("price", "1.0");
     String message = assertThrows(
         ValidationException.class,
-        () -> book.withUpdatedField("price", "1.0")
+        () -> book.withUpdatedFields(updates)
     ).getMessage();
     assertThat(message, is("Incorrect format of 'price' field"));
   }
 
   @Test
   void shouldFailToUpdateProvidingInvalidValue() {
+    updates.put("price", -1.0);
     String message = assertThrows(
         ValidationException.class,
-        () -> book.withUpdatedField("price", -1.0)
+        () -> book.withUpdatedFields(updates)
     ).getMessage();
     assertThat(message, is("price must be greater than or equal to 0"));
+  }
+
+  @Test
+  void shouldUpdateNameAuthorQuantityPriceAndNewAntiqueReleaseYearFields() {
+    String newName = "new name";
+    String newAuthor = "new author";
+    int newQuantity = 150;
+    double newPrice = 16.0;
+    int newAntiqueReleaseYear = 150;
+
+    updates.put("name", newName);
+    updates.put("author", newAuthor);
+    updates.put("quantity", newQuantity);
+    updates.put("price", newPrice);
+    updates.put("antiqueReleaseYear", newAntiqueReleaseYear);
+
+    Book actual = book.withUpdatedFields(updates);
+    Book expected = Fixture.book()
+        .name(newName)
+        .author(newAuthor)
+        .quantity(newQuantity)
+        .price(newPrice)
+        .antiqueReleaseYear(newAntiqueReleaseYear)
+        .build();
+    assertThat(actual, is(expected));
   }
 
   @Test

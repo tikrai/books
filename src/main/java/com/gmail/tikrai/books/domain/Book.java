@@ -6,6 +6,7 @@ import com.gmail.tikrai.books.Generated;
 import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.validators.NotAntiqueScienceBook;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Validation;
@@ -75,7 +76,15 @@ public class Book {
     return quantity * price;
   }
 
-  public Book withUpdatedField(String fieldName, Object value) {
+  public Book withUpdatedFields(Map<String, Object> updates) {
+    Book book = this;
+    for (Map.Entry<String, Object> update: updates.entrySet()) {
+      book = book.withUpdatedField(update.getKey(), update.getValue());
+    }
+    return book;
+  }
+
+  private Book withUpdatedField(String fieldName, Object value) {
     Book book;
 
     try {

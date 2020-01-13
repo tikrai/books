@@ -54,9 +54,9 @@ public class BooksController {
   @PatchMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Book> updateField(
       @PathVariable("barcode") String barcode,
-      @RequestBody Map.Entry<String, Object> update
+      @RequestBody Map<String, Object> updates
   ) {
-    Book updated = booksService.updateField(barcode, update.getKey(), update.getValue());
+    Book updated = booksService.updateFields(barcode, updates);
     return new ResponseEntity<>(updated, HttpStatus.OK);
   }
 }
