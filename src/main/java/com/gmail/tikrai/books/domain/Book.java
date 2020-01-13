@@ -2,8 +2,8 @@ package com.gmail.tikrai.books.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gmail.tikrai.books.Generated;
 import com.gmail.tikrai.books.exception.ValidationException;
+import com.gmail.tikrai.books.util.Generated;
 import com.gmail.tikrai.books.validators.NotAntiqueScienceBook;
 import java.util.Calendar;
 import java.util.Map;

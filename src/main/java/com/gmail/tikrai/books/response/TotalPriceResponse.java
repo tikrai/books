@@ -2,7 +2,7 @@ package com.gmail.tikrai.books.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gmail.tikrai.books.Generated;
+import com.gmail.tikrai.books.util.Generated;
 import java.util.Objects;
 
 public class TotalPriceResponse {

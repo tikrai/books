@@ -3,6 +3,7 @@ package com.gmail.tikrai.books.controller;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
+import com.gmail.tikrai.books.util.RestUtil.Endpoint;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping(Endpoint.BOOKS)
 public class BooksController {
 
   private final BooksService booksService;
