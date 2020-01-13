@@ -1,10 +1,12 @@
 package com.gmail.tikrai.books.repository;
 
 import com.gmail.tikrai.books.domain.Book;
+import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.repository.rowmappers.BooksMapper;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +46,11 @@ public class BooksRepository {
         book.antiqueReleaseYear().orElse(null),
         book.scienceIndex().orElse(null)
     );
-    db.update(sql);
+    try {
+      db.update(sql);
+    } catch (DataAccessException e) {
+      throw new ValidationException(e.getCause().getMessage());
+    }
     return book;
   }
 
