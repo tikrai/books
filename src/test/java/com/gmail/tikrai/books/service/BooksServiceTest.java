@@ -111,9 +111,11 @@ class BooksServiceTest {
     Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
     when(booksRepository.update(book.barcode(), book)).thenReturn(book);
-    HashMap<String, Object> updates = new HashMap<String, Object>() {{
-      put("author", book.author());
-    }};
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("author", book.author());
+      }
+    };
 
     Book actual = booksService.updateFields(book.barcode(), updates);
 

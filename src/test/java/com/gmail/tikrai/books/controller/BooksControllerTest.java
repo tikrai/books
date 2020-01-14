@@ -89,9 +89,11 @@ class BooksControllerTest {
   void shouldUpdateBookField() {
     String fieldName = "name";
     String fieldValue = "New Name";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {{
-      put(fieldName, fieldValue);
-    }};
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put(fieldName, fieldValue);
+      }
+    };
     when(booksService.updateFields(book.barcode(), updates)).thenReturn(book);
 
     ResponseEntity<Book> actual = booksController.updateField(book.barcode(), updates);

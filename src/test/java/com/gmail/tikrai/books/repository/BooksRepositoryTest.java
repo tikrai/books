@@ -3,12 +3,12 @@ package com.gmail.tikrai.books.repository;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyString;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.fixture.Fixture;

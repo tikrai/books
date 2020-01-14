@@ -148,10 +148,12 @@ class BooksControllerIT extends IntegrationTestCase {
     booksRepository.create(book);
     String newName = "new name";
     String newAuthor = "new author";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {{
-      put("name", newName);
-      put("author", newAuthor);
-    }};
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("name", newName);
+        put("author", newAuthor);
+      }
+    };
 
     Response response = given().body(updates).patch(barcodePath);
 
@@ -165,10 +167,12 @@ class BooksControllerIT extends IntegrationTestCase {
   void shouldFailToUpdateBookFieldsIfBarcodeDoNotExist() {
     String newName = "new name";
     String newAuthor = "new author";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {{
-      put("name", newName);
-      put("author", newAuthor);
-    }};
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("name", newName);
+        put("author", newAuthor);
+      }
+    };
 
     Response response = given().body(updates).patch(barcodePath);
 
@@ -186,9 +190,11 @@ class BooksControllerIT extends IntegrationTestCase {
   void shouldFailToUpdateBookFieldsIfRequestIsInvalid() {
     booksRepository.create(book);
     String badName = "a";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {{
-      put("name", badName);
-    }};
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("name", badName);
+      }
+    };
 
     Response response = given().body(updates).patch(barcodePath);
 
