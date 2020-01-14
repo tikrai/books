@@ -4,6 +4,14 @@ spring:
     username: books
     password: books
 
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+
 server:
   port: 8000
 
@@ -12,5 +20,3 @@ spring:
   profiles: test
   datasource:
     url: jdbc:postgresql://127.0.0.1:5432/books_test
-app:
-  debug: false

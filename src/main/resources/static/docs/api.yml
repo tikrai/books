@@ -9,6 +9,8 @@ servers:
 tags:
   - name: books
     description: Book storage, update, access and total price calculation
+  - name: health
+    description: Service health information
 paths:
   /books:
     post:
@@ -274,6 +276,58 @@ paths:
                 message: Database is temporary unavailable
                 path: /books/bc000001
                 timestamp: '2017-01-12T14:00:00Z'
+  /health:
+    get:
+      tags:
+        - health
+      operationId: health
+      summary: Service health check
+      description: Returns health status UP or DOWN.
+      responses:
+        200:
+          description: The API is operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              example:
+                status: UP
+                components:
+                  db:
+                    status: UP
+                    details:
+                      database: "PostgreSQL"
+                      result": 1
+                      validationQuery: "SELECT 1"
+                  diskspace:
+                    status: UP
+                    details:
+                      total: 19205710336,
+                      free:  11217336832,
+                      threshold: 10485760
+                  ping:
+                    status: UP
+        503:
+          description: The service is temporary unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              example:
+                status: DOWN
+                components:
+                  db:
+                    status: DOWN
+                    details:
+                      error: "Connection is not available"
+                  diskspace:
+                    status: UP
+                    details:
+                      total: 19205710336,
+                      free:  11217336832,
+                      threshold: 10485760
+                  ping:
+                    status: UP
 
 components:
   schemas:
@@ -396,6 +450,30 @@ components:
         price:
           type: number
           format: double
+    Status:
+      type: object
+      properties:
+        status:
+          type: string
+        components:
+          $ref: '#/components/schemas/Components'
+    Components:
+      type: object
+      properties:
+        db:
+          $ref: '#/components/schemas/ComponentStatus'
+        diskSpace:
+          $ref: '#/components/schemas/ComponentStatus'
+        ping:
+          $ref: '#/components/schemas/ComponentStatus'
+    ComponentStatus:
+      type: object
+      properties:
+        status:
+          type: string
+        details:
+          type: object
+
   parameters:
     barcode:
       name: barcode
