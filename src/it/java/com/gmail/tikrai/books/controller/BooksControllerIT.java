@@ -59,12 +59,41 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
+  void shouldFailToGetTotalBookPriceByBarcode() {
+    Response response = given().get(barcodePath.concat("/total-price"));
+
+    response.then().statusCode(HttpStatus.NOT_FOUND.value());
+    String expectedMessage = String.format("Book with barcode '%s' was not found", book.barcode());
+    response.then()
+        .statusCode(HttpStatus.NOT_FOUND.value())
+        .body("status", equalTo(404))
+        .body("error", equalTo("Not Found"))
+        .body("message", equalTo(expectedMessage))
+        .body("path", equalTo(barcodePath.concat("/total-price")));
+  }
+
+  @Test
   void shouldCreateBook() {
     Response response = given().body(book).post(Endpoint.BOOKS);
 
     response.then().statusCode(HttpStatus.CREATED.value());
     assertThat(response.as(Book.class), equalTo(book));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
+  }
+
+  @Test
+  void shouldFailToCreateBookIfRequestIsInvalid() {
+    Book newBook = Fixture.book().name("a").build();
+
+    Response response = given().body(newBook).post(Endpoint.BOOKS);
+
+    response.then()
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .body("status", equalTo(400))
+        .body("error", equalTo("Bad Request"))
+        .body("message", equalTo("Validation failed for object='book'. Error count: 1"))
+        .body("path", equalTo(Endpoint.BOOKS));
+    assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
   }
 
   @Test
@@ -85,21 +114,6 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
-  void shouldFailToCreateBookIfRequestIsInvalid() {
-    Book newBook = Fixture.book().name("a").build();
-
-    Response response = given().body(newBook).post(Endpoint.BOOKS);
-
-    response.then()
-        .statusCode(HttpStatus.BAD_REQUEST.value())
-        .body("status", equalTo(400))
-        .body("error", equalTo("Bad Request"))
-        .body("message", equalTo("Validation failed for object='book'. Error count: 1"))
-        .body("path", equalTo(Endpoint.BOOKS));
-    assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
-  }
-
-  @Test
   void shouldUpdateBook() {
     booksRepository.create(book);
     Book updated = Fixture.book().author("new author").build();
@@ -109,22 +123,6 @@ class BooksControllerIT extends IntegrationTestCase {
     response.then().statusCode(HttpStatus.OK.value());
     assertThat(response.as(Book.class), equalTo(updated));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(updated)));
-  }
-
-  @Test
-  void shouldFailToUpdateBookIfBarcodeDoNotExist() {
-    Book updated = Fixture.book().author("new author").build();
-
-    Response response = given().body(updated).put(barcodePath);
-
-    String expectedMessage = String.format("Book with barcode '%s' was not found", book.barcode());
-    response.then()
-        .statusCode(HttpStatus.NOT_FOUND.value())
-        .body("status", equalTo(404))
-        .body("error", equalTo("Not Found"))
-        .body("message", equalTo(expectedMessage))
-        .body("path", equalTo(barcodePath));
-    assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
   }
 
   @Test
@@ -141,6 +139,22 @@ class BooksControllerIT extends IntegrationTestCase {
         .body("message", equalTo("Validation failed for object='book'. Error count: 1"))
         .body("path", equalTo(barcodePath));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
+  }
+
+  @Test
+  void shouldFailToUpdateBookIfBarcodeDoNotExist() {
+    Book updated = Fixture.book().author("new author").build();
+
+    Response response = given().body(updated).put(barcodePath);
+
+    String expectedMessage = String.format("Book with barcode '%s' was not found", book.barcode());
+    response.then()
+        .statusCode(HttpStatus.NOT_FOUND.value())
+        .body("status", equalTo(404))
+        .body("error", equalTo("Not Found"))
+        .body("message", equalTo(expectedMessage))
+        .body("path", equalTo(barcodePath));
+    assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
   }
 
   @Test
@@ -164,6 +178,27 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
+  void shouldFailToUpdateBookFieldsIfRequestIsInvalid() {
+    booksRepository.create(book);
+    String badName = "a";
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("name", badName);
+      }
+    };
+
+    Response response = given().body(updates).patch(barcodePath);
+
+    response.then()
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .body("status", equalTo(400))
+        .body("error", equalTo("Bad Request"))
+        .body("message", equalTo("name length must be between 2 and 255"))
+        .body("path", equalTo(barcodePath));
+    assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
+  }
+
+  @Test
   void shouldFailToUpdateBookFieldsIfBarcodeDoNotExist() {
     String newName = "new name";
     String newAuthor = "new author";
@@ -184,26 +219,5 @@ class BooksControllerIT extends IntegrationTestCase {
         .body("message", equalTo(expectedMessage))
         .body("path", equalTo(barcodePath));
     assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
-  }
-
-  @Test
-  void shouldFailToUpdateBookFieldsIfRequestIsInvalid() {
-    booksRepository.create(book);
-    String badName = "a";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {
-      {
-        put("name", badName);
-      }
-    };
-
-    Response response = given().body(updates).patch(barcodePath);
-
-    response.then()
-        .statusCode(HttpStatus.BAD_REQUEST.value())
-        .body("status", equalTo(400))
-        .body("error", equalTo("Bad Request"))
-        .body("message", equalTo("name length must be between 2 and 255"))
-        .body("path", equalTo(barcodePath));
-    assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
   }
 }
