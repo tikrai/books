@@ -2,6 +2,7 @@ package com.gmail.tikrai.books.controller;
 
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ValidationException;
+import com.gmail.tikrai.books.request.BookRequest;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import com.gmail.tikrai.books.util.RestUtil.Endpoint;
@@ -30,30 +31,36 @@ public class BooksController {
   }
 
   @GetMapping(value = "/{barcode}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Book> findByBarcode(@PathVariable String barcode) {
+  public ResponseEntity<Book> findByBarcode(
+      @PathVariable String barcode
+  ) {
     return new ResponseEntity<>(booksService.findByBarcode(barcode), HttpStatus.OK);
   }
 
   @GetMapping(value = "/{barcode}/total-price", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<TotalPriceResponse> getTotalPrice(@PathVariable String barcode) {
+  public ResponseEntity<TotalPriceResponse> getTotalPrice(
+      @PathVariable String barcode
+  ) {
     TotalPriceResponse response = new TotalPriceResponse(booksService.getTotalPrice(barcode));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Book> create(@Valid @RequestBody Book book) {
-    return new ResponseEntity<>(booksService.create(book), HttpStatus.CREATED);
+  public ResponseEntity<Book> create(
+      @Valid @RequestBody BookRequest request
+  ) {
+    return new ResponseEntity<>(booksService.create(request.toDomain()), HttpStatus.CREATED);
   }
 
   @PutMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Book> update(
       @PathVariable String barcode,
-      @Valid @RequestBody Book book
+      @Valid @RequestBody BookRequest request
   ) {
+    Book book = request.toDomain();
     if (!book.barcode().equals(barcode)) {
       throw new ValidationException("Modification of 'barcode' field is not allowed");
     }
-
     return new ResponseEntity<>(booksService.update(barcode, book), HttpStatus.OK);
   }
 

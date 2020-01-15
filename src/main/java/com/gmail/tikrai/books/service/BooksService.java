@@ -4,6 +4,7 @@ import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ResourceNotFoundException;
 import com.gmail.tikrai.books.exception.UniqueIdentifierException;
 import com.gmail.tikrai.books.repository.BooksRepository;
+import com.gmail.tikrai.books.request.BookRequest;
 import java.math.BigDecimal;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,8 @@ public class BooksService {
   }
 
   public Book updateFields(String barcode, Map<String, Object> updates) {
-    Book updated = findByBarcode(barcode).withUpdatedFields(updates);
-    return makeUpdate(barcode, updated);
+    BookRequest updated = BookRequest.of(findByBarcode(barcode)).withUpdatedFields(updates);
+    return makeUpdate(barcode, updated.toDomain());
   }
 
   private Book makeUpdate(String barcode, Book book) {

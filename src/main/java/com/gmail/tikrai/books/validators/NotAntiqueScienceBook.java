@@ -1,6 +1,6 @@
 package com.gmail.tikrai.books.validators;
 
-import com.gmail.tikrai.books.domain.Book;
+import com.gmail.tikrai.books.request.BookRequest;
 import com.gmail.tikrai.books.validators.NotAntiqueScienceBook.NotAntiqueScienceBookValidator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,15 +20,16 @@ public @interface NotAntiqueScienceBook {
   Class<?>[] groups() default {};
   Class<? extends Payload>[] payload() default {};
 
-  class NotAntiqueScienceBookValidator implements ConstraintValidator<NotAntiqueScienceBook, Book> {
+  class NotAntiqueScienceBookValidator
+      implements ConstraintValidator<NotAntiqueScienceBook, BookRequest> {
 
     @Override
     public void initialize(NotAntiqueScienceBook constraint) {
     }
 
     @Override
-    public boolean isValid(Book book, ConstraintValidatorContext context) {
-      return !book.scienceIndex().isPresent() || !book.antiqueReleaseYear().isPresent();
+    public boolean isValid(BookRequest value, ConstraintValidatorContext context) {
+      return !value.scienceIndex().isPresent() || !value.antiqueReleaseYear().isPresent();
     }
   }
 }

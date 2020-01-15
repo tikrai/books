@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.fixture.Fixture;
+import com.gmail.tikrai.books.request.BookRequest;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import java.util.HashMap;
@@ -22,7 +23,8 @@ class BooksControllerTest {
 
   private final BooksService booksService = mock(BooksService.class);
   private final BooksController booksController = new BooksController(booksService);
-  private final Book book = Fixture.book().build();
+  private final BookRequest bookRequest = Fixture.bookRequest().build();
+  private final Book book = bookRequest.toDomain();
 
   @Test
   void shouldFindByBarcode() {
@@ -53,7 +55,7 @@ class BooksControllerTest {
   void shouldCreateBook() {
     when(booksService.create(book)).thenReturn(book);
 
-    ResponseEntity<Book> actual = booksController.create(book);
+    ResponseEntity<Book> actual = booksController.create(bookRequest);
 
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.CREATED);
     assertThat(actual, is(expected));
@@ -65,7 +67,7 @@ class BooksControllerTest {
   void shouldUpdateBook() {
     when(booksService.update(book.barcode(), book)).thenReturn(book);
 
-    ResponseEntity<Book> actual = booksController.update(book.barcode(), book);
+    ResponseEntity<Book> actual = booksController.update(book.barcode(), bookRequest);
 
     ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
     assertThat(actual, is(expected));
@@ -79,7 +81,7 @@ class BooksControllerTest {
 
     String message = assertThrows(
         ValidationException.class,
-        () -> booksController.update(oldBarcode, book)
+        () -> booksController.update(oldBarcode, bookRequest)
     ).getMessage();
     assertThat(message, is("Modification of 'barcode' field is not allowed"));
     verifyNoMoreInteractions(booksService);
