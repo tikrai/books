@@ -178,6 +178,24 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
+  void shouldUpdateBookPriceWithIntegerValue() {
+    booksRepository.create(book);
+    int newPrice = 1;
+    HashMap<String, Object> updates = new HashMap<String, Object>() {
+      {
+        put("price", newPrice);
+      }
+    };
+
+    Response response = given().body(updates).patch(barcodePath);
+
+    Book updated = Fixture.book().price(newPrice).build();
+    response.then().statusCode(HttpStatus.OK.value());
+    assertThat(response.as(Book.class), equalTo(updated));
+    assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(updated)));
+  }
+
+  @Test
   void shouldFailToUpdateBookFieldsIfRequestIsInvalid() {
     booksRepository.create(book);
     String badName = "a";

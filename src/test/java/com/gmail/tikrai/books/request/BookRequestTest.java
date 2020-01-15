@@ -126,8 +126,16 @@ class BookRequestTest {
   }
 
   @Test
-  void shouldUpdatePriceField() {
+  void shouldUpdatePriceFieldWithDoubleValue() {
     double newPrice = 16.0;
+    updates.put("price", newPrice);
+    BookRequest actual = bookRequest.withUpdatedFields(updates);
+    assertThat(actual, is(Fixture.bookRequest().price(newPrice).build()));
+  }
+
+  @Test
+  void shouldUpdatePriceFieldWithIntegerValue() {
+    int newPrice = 16;
     updates.put("price", newPrice);
     BookRequest actual = bookRequest.withUpdatedFields(updates);
     assertThat(actual, is(Fixture.bookRequest().price(newPrice).build()));

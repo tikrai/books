@@ -94,7 +94,7 @@ public class BookRequest {
           bookRequest = withQuantity((int) value);
           break;
         case "price":
-          bookRequest = withPrice(BigDecimal.valueOf((double) value));
+          bookRequest = withPrice(bigDecimalOf(value));
           break;
         case "antiqueReleaseYear":
           bookRequest = withAntiqueReleaseYear((int) value);
@@ -118,6 +118,16 @@ public class BookRequest {
         });
 
     return bookRequest;
+  }
+
+  private BigDecimal bigDecimalOf(Object o) {
+    double doubleValue;
+    try {
+      doubleValue = (double) o;
+    } catch (ClassCastException e) {
+      doubleValue = (int) o;
+    }
+    return BigDecimal.valueOf(doubleValue);
   }
 
   private BookRequest withName(String name) {
