@@ -4,38 +4,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.gmail.tikrai.books.domain.Book;
 import com.gmail.tikrai.books.exception.ValidationException;
 import com.gmail.tikrai.books.util.Generated;
-import com.gmail.tikrai.books.validators.NotAntiqueScienceBook;
+import com.gmail.tikrai.books.validation.Validator;
+import com.gmail.tikrai.books.validation.ValidatorGroup;
+import com.gmail.tikrai.books.validation.validators.NullValidator;
+import com.gmail.tikrai.books.validation.validators.SizeValidator;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Validation;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
-@NotAntiqueScienceBook
-public class BookRequest {
-  @Length(min = 2, max = 255)
+public class BookRequest implements Validator {
   private final String barcode;
-
-  @Length(min = 2, max = 255)
   private final String name;
-
-  @Length(min = 2, max = 255)
   private final String author;
-
-  @Min(1)
-  private final int quantity;
-
-  @Min(0)
+  private final Integer quantity;
   private final BigDecimal price;
-
-  @Max(1900)
   private final Integer antiqueReleaseYear;
-
-  @Range(min = 1, max = 10)
   private final Integer scienceIndex;
 
   @JsonCreator
@@ -43,7 +27,7 @@ public class BookRequest {
       String barcode,
       String name,
       String author,
-      int quantity,
+      Integer quantity,
       BigDecimal price,
       Integer antiqueReleaseYear,
       Integer scienceIndex
@@ -52,7 +36,7 @@ public class BookRequest {
     this.name = name;
     this.author = author;
     this.quantity = quantity;
-    this.price = price.setScale(2, BigDecimal.ROUND_HALF_UP);
+    this.price = price == null ? null : price.setScale(2, BigDecimal.ROUND_HALF_UP);
     this.antiqueReleaseYear = antiqueReleaseYear;
     this.scienceIndex = scienceIndex;
   }
@@ -106,17 +90,8 @@ public class BookRequest {
           throw new ValidationException(String.format("Book has no field '%s'", fieldName));
       }
     } catch (ClassCastException e) {
-      throw new ValidationException(String.format("Incorrect format of '%s' field", fieldName));
+      throw new ValidationException(String.format("Incorrect format not '%s' field", fieldName));
     }
-
-    Validation.buildDefaultValidatorFactory().getValidator().validate(bookRequest).stream()
-        .findFirst()
-        .ifPresent(violation -> {
-          throw new ValidationException(
-              String.format("%s %s", violation.getPropertyPath().toString(), violation.getMessage())
-          );
-        });
-
     return bookRequest;
   }
 
@@ -166,16 +141,41 @@ public class BookRequest {
     );
   }
 
-  public Optional<Integer> antiqueReleaseYear() {
-    return Optional.ofNullable(antiqueReleaseYear);
-  }
-
-  public Optional<Integer> scienceIndex() {
-    return Optional.ofNullable(scienceIndex);
-  }
-
   public Book toDomain() {
     return new Book(barcode, name, author, quantity, price, antiqueReleaseYear, scienceIndex);
+  }
+
+  @Override
+  public Optional<String> valid() {
+    return ValidatorGroup.of(
+        ValidatorGroup.of(
+            NullValidator.not("barcode", barcode),
+            SizeValidator.range("barcode", barcode, 2, 255)
+        ),
+        ValidatorGroup.of(
+            NullValidator.not("name", name),
+            SizeValidator.range("name", name, 2, 255)
+        ),
+        ValidatorGroup.of(
+            NullValidator.not("author", author),
+            SizeValidator.range("author", author, 2, 255)
+        ),
+        ValidatorGroup.of(
+            NullValidator.not("quantity", quantity),
+            SizeValidator.min("quantity", quantity, 1)
+        ),
+        ValidatorGroup.of(
+            NullValidator.not("price", price),
+            SizeValidator.min("price", price, BigDecimal.valueOf(1))
+        ),
+        SizeValidator.max("antiqueReleaseYear", antiqueReleaseYear, 1900),
+        SizeValidator.range("scienceIndex", scienceIndex, 1, 10),
+        NullValidator.min(
+            new Object[]{antiqueReleaseYear, scienceIndex},
+            1,
+            "Book cannot be both antique and science journal"
+        )
+    ).valid();
   }
 
   @Override
@@ -188,10 +188,10 @@ public class BookRequest {
       return false;
     }
     BookRequest request = (BookRequest) o;
-    return quantity == request.quantity
-        && Objects.equals(barcode, request.barcode)
+    return Objects.equals(barcode, request.barcode)
         && Objects.equals(name, request.name)
         && Objects.equals(author, request.author)
+        && Objects.equals(quantity, request.quantity)
         && Objects.equals(price, request.price)
         && Objects.equals(antiqueReleaseYear, request.antiqueReleaseYear)
         && Objects.equals(scienceIndex, request.scienceIndex);

@@ -7,7 +7,7 @@ public class BookRequestFixture {
   private String barcode = "1234";
   private String name = "Book Name";
   private String author = "Book Author";
-  private int quantity = 2;
+  private Integer quantity = 2;
   private BigDecimal price = BigDecimal.valueOf(11.10);
   private Integer antiqueReleaseYear = null;
   private Integer scienceIndex = null;
@@ -27,13 +27,15 @@ public class BookRequestFixture {
     return this;
   }
 
-  public BookRequestFixture quantity(int quantity) {
+  public BookRequestFixture quantity(Integer quantity) {
     this.quantity = quantity;
     return this;
   }
 
-  public BookRequestFixture price(double price) {
-    this.price = BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_HALF_UP);
+  public BookRequestFixture price(Double price) {
+    this.price = price == null
+        ? null
+        : BigDecimal.valueOf(price).setScale(2, BigDecimal.ROUND_HALF_UP);
     return this;
   }
 

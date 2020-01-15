@@ -1,6 +1,6 @@
 package com.gmail.tikrai.books.controller;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -32,8 +32,7 @@ class BooksControllerTest {
 
     ResponseEntity<Book> actual = booksController.findByBarcode(book.barcode());
 
-    ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
-    assertThat(actual, is(expected));
+    assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.OK)));
     verify(booksService).findByBarcode(book.barcode());
     verifyNoMoreInteractions(booksService);
   }
@@ -46,7 +45,7 @@ class BooksControllerTest {
 
     ResponseEntity<TotalPriceResponse> expected =
         new ResponseEntity<>(new TotalPriceResponse(book.totalPrice()), HttpStatus.OK);
-    assertThat(actual, is(expected));
+    assertThat(actual, equalTo(expected));
     verify(booksService).getTotalPrice(book.barcode());
     verifyNoMoreInteractions(booksService);
   }
@@ -57,8 +56,7 @@ class BooksControllerTest {
 
     ResponseEntity<Book> actual = booksController.create(bookRequest);
 
-    ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.CREATED);
-    assertThat(actual, is(expected));
+    assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.CREATED)));
     verify(booksService).create(book);
     verifyNoMoreInteractions(booksService);
   }
@@ -69,8 +67,7 @@ class BooksControllerTest {
 
     ResponseEntity<Book> actual = booksController.update(book.barcode(), bookRequest);
 
-    ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
-    assertThat(actual, is(expected));
+    assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.OK)));
     verify(booksService).update(book.barcode(), book);
     verifyNoMoreInteractions(booksService);
   }
@@ -83,26 +80,21 @@ class BooksControllerTest {
         ValidationException.class,
         () -> booksController.update(oldBarcode, bookRequest)
     ).getMessage();
-    assertThat(message, is("Modification of 'barcode' field is not allowed"));
+    assertThat(message, equalTo("Modification of 'barcode' field is not allowed"));
     verifyNoMoreInteractions(booksService);
   }
 
   @Test
   void shouldUpdateBookField() {
-    String fieldName = "name";
-    String fieldValue = "New Name";
-    HashMap<String, Object> updates = new HashMap<String, Object>() {
-      {
-        put(fieldName, fieldValue);
-      }
-    };
-    when(booksService.updateFields(book.barcode(), updates)).thenReturn(book);
+    HashMap<String, Object> updates = new HashMap<String, Object>() {};
+    when(booksService.updateRequest(book.barcode(), updates)).thenReturn(bookRequest);
+    when(booksService.update(book.barcode(), book)).thenReturn(book);
 
     ResponseEntity<Book> actual = booksController.updateField(book.barcode(), updates);
 
-    ResponseEntity<Book> expected = new ResponseEntity<>(book, HttpStatus.OK);
-    assertThat(actual, is(expected));
-    verify(booksService).updateFields(book.barcode(), updates);
+    assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.OK)));
+    verify(booksService).updateRequest(book.barcode(), updates);
+    verify(booksService).update(book.barcode(), book);
     verifyNoMoreInteractions(booksService);
   }
 }

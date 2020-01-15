@@ -42,7 +42,7 @@ paths:
               example:
                 status: 400
                 error: Bad Request
-                message: "Validation failed for object='book'. Error count: 1"
+                message: "'name' length must be between 2 and 255"
                 path: /books
                 timestamp: '2017-01-12T14:36:09Z'
         409:
@@ -140,7 +140,7 @@ paths:
               example:
                 status: 400
                 error: Bad Request
-                message: "Validation failed for object='book'. Error count: 1"
+                message: "'name' length must be between 2 and 255"
                 path: /books
                 timestamp: '2017-01-12T14:36:09Z'
         404:
@@ -200,7 +200,7 @@ paths:
               example:
                 status: 400
                 error: Bad Request
-                message: "Validation failed for object='book'. Error count: 1"
+                message: "'name' length must be between 2 and 255"
                 path: /books
                 timestamp: '2017-01-12T14:36:09Z'
         404:

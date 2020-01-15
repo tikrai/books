@@ -7,7 +7,6 @@ import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import com.gmail.tikrai.books.util.RestUtil.Endpoint;
 import java.util.Map;
-import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,16 +46,18 @@ public class BooksController {
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Book> create(
-      @Valid @RequestBody BookRequest request
+      @RequestBody BookRequest request
   ) {
+    request.validate();
     return new ResponseEntity<>(booksService.create(request.toDomain()), HttpStatus.CREATED);
   }
 
   @PutMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Book> update(
       @PathVariable String barcode,
-      @Valid @RequestBody BookRequest request
+      @RequestBody BookRequest request
   ) {
+    request.validate();
     Book book = request.toDomain();
     if (!book.barcode().equals(barcode)) {
       throw new ValidationException("Modification of 'barcode' field is not allowed");
@@ -69,7 +70,7 @@ public class BooksController {
       @PathVariable("barcode") String barcode,
       @RequestBody Map<String, Object> updates
   ) {
-    Book updated = booksService.updateFields(barcode, updates);
-    return new ResponseEntity<>(updated, HttpStatus.OK);
+    BookRequest request = booksService.updateRequest(barcode, updates);
+    return update(barcode, request);
   }
 }

@@ -91,7 +91,7 @@ class BooksControllerIT extends IntegrationTestCase {
         .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("status", equalTo(400))
         .body("error", equalTo("Bad Request"))
-        .body("message", equalTo("Validation failed for object='bookRequest'. Error count: 1"))
+        .body("message", equalTo("'name' length must be between 2 and 255"))
         .body("path", equalTo(Endpoint.BOOKS));
     assertThat(booksRepository.findAll(), equalTo(Collections.emptyList()));
   }
@@ -136,7 +136,7 @@ class BooksControllerIT extends IntegrationTestCase {
         .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("status", equalTo(400))
         .body("error", equalTo("Bad Request"))
-        .body("message", equalTo("Validation failed for object='bookRequest'. Error count: 1"))
+        .body("message", equalTo("'name' length must be between 2 and 255"))
         .body("path", equalTo(barcodePath));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
   }
@@ -211,7 +211,7 @@ class BooksControllerIT extends IntegrationTestCase {
         .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("status", equalTo(400))
         .body("error", equalTo("Bad Request"))
-        .body("message", equalTo("name length must be between 2 and 255"))
+        .body("message", equalTo("'name' length must be between 2 and 255"))
         .body("path", equalTo(barcodePath));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
   }

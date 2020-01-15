@@ -41,15 +41,10 @@ public class BooksService {
 
   public Book update(String barcode, Book book) {
     findByBarcode(barcode);
-    return makeUpdate(barcode, book);
-  }
-
-  public Book updateFields(String barcode, Map<String, Object> updates) {
-    BookRequest updated = BookRequest.of(findByBarcode(barcode)).withUpdatedFields(updates);
-    return makeUpdate(barcode, updated.toDomain());
-  }
-
-  private Book makeUpdate(String barcode, Book book) {
     return booksRepository.update(barcode, book);
+  }
+
+  public BookRequest updateRequest(String barcode, Map<String, Object> updates) {
+    return BookRequest.of(findByBarcode(barcode)).withUpdatedFields(updates);
   }
 }
