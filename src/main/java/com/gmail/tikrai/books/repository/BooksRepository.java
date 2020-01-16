@@ -54,7 +54,7 @@ public class BooksRepository {
     return book;
   }
 
-  public Book update(String barcode, Book book) {
+  public Book update(Book book) {
     String sql = String.format(
         "UPDATE %s SET (%s) = ('%s', '%s', %d, %d, %d, %d) WHERE barcode = '%s'",
         TABLE,
@@ -65,7 +65,7 @@ public class BooksRepository {
         book.price().unscaledValue(),
         book.antiqueReleaseYear().orElse(null),
         book.scienceIndex().orElse(null),
-        barcode
+        book.barcode()
     );
     db.update(sql);
     return book;

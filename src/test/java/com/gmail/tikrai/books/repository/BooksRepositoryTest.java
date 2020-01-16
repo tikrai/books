@@ -59,7 +59,7 @@ class BooksRepositoryTest {
 
   @Test
   void shouldUpdateBook() {
-    booksRepository.update(book.barcode(), book);
+    booksRepository.update(book);
 
     String expectedQuery = "UPDATE books "
         + "SET (name, author, quantity, price, antique_release_year, science_index) = "

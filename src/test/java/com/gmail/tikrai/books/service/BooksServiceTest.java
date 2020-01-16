@@ -96,14 +96,14 @@ class BooksServiceTest {
   @Test
   void shouldUpdateBook() {
     Book book = Fixture.book().build();
-    when(booksRepository.update(book.barcode(), book)).thenReturn(book);
+    when(booksRepository.update(book)).thenReturn(book);
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
 
     Book actual = booksService.update(book.barcode(), book);
 
     assertThat(actual, is(book));
     verify(booksRepository).findByBarcode(book.barcode());
-    verify(booksRepository).update(book.barcode(), book);
+    verify(booksRepository).update(book);
     verifyNoMoreInteractions(booksRepository);
   }
 
@@ -111,7 +111,7 @@ class BooksServiceTest {
   void shouldUpdateBookFields() {
     Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
-    when(booksRepository.update(book.barcode(), book)).thenReturn(book);
+    when(booksRepository.update(book)).thenReturn(book);
     HashMap<String, Object> updates = new HashMap<String, Object>() {};
 
     BookRequest actual = booksService.updateRequest(book.barcode(), updates);

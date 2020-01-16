@@ -8,10 +8,10 @@ import com.jayway.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-public class HealthIT extends IntegrationTestCase {
+class HealthIT extends IntegrationTestCase {
 
   @Test
-  public void shouldShowHealth() {
+  void shouldShowHealth() {
     Response response = given().get(Endpoint.HEALTH);
 
     response.then()

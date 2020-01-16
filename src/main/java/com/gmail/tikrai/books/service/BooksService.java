@@ -41,7 +41,7 @@ public class BooksService {
 
   public Book update(String barcode, Book book) {
     findByBarcode(barcode);
-    return booksRepository.update(barcode, book);
+    return booksRepository.update(book);
   }
 
   public BookRequest updateRequest(String barcode, Map<String, Object> updates) {
