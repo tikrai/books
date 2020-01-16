@@ -18,7 +18,6 @@ class HealthIT extends IntegrationTestCase {
         .statusCode(HttpStatus.OK.value())
         .contentType(ContentType.JSON)
         .body("status", equalTo("UP"))
-        .body("components.db.status", equalTo("UP"))
         .body("components.diskSpace.status", equalTo("UP"))
         .body("components.ping.status", equalTo("UP"));
   }

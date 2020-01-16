@@ -1,73 +1,75 @@
 package com.gmail.tikrai.books.repository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.tikrai.books.domain.Book;
-import com.gmail.tikrai.books.repository.rowmappers.BooksMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BooksRepository {
 
-  public static final String TABLE = "books";
-  private static final String NAME = "name";
-  private static final String AUTHOR = "author";
-  private static final String QUANTITY = "quantity";
-  private static final String PRICE = "price";
-  private static final String ANTIQUE_RELEASE_YEAR = "antique_release_year";
-  private static final String SCIENCE_INDEX = "science_index";
-  private static final String DATA_FIELDS = String.join(", ",
-      NAME, AUTHOR, QUANTITY, PRICE, ANTIQUE_RELEASE_YEAR, SCIENCE_INDEX);
-  private final JdbcTemplate db;
+  private final ObjectMapper mapper;
+  private final File file;
+
+  private final Map<String, Book> allBooks = new HashMap<>();
 
   @Autowired
-  public BooksRepository(JdbcTemplate db) {
-    this.db = db;
+  public BooksRepository(
+      ObjectMapper mapper,
+      @Value("${spring.datasource.url}") String fileName
+  ) {
+    this.mapper = mapper;
+    this.file = new File(fileName);
   }
 
   public List<Book> findAll() {
-    String sql = String.format("SELECT * FROM %s", TABLE);
-    return db.query(sql, new BooksMapper());
+    if (allBooks.isEmpty()) {
+      readFromFile();
+    }
+    return new ArrayList<>(allBooks.values());
   }
 
   public Optional<Book> findByBarcode(String barcode) {
-    String sql = String.format("SELECT * FROM %s WHERE barcode = '%s'", TABLE, barcode);
-    return db.query(sql, new BooksMapper()).stream().filter(Objects::nonNull).findFirst();
+    if (allBooks.isEmpty()) {
+      readFromFile();
+    }
+    return Optional.ofNullable(allBooks.get(barcode));
   }
 
   public Book create(Book book) {
-    String sql = String.format(
-        "INSERT INTO %s VALUES ('%s', '%s', '%s', %s, %s, %s, %s)",
-        TABLE,
-        book.barcode(),
-        book.name(),
-        book.author(),
-        book.quantity(),
-        book.price().unscaledValue(),
-        book.antiqueReleaseYear().orElse(null),
-        book.scienceIndex().orElse(null)
-    );
-    db.update(sql);
+    allBooks.put(book.barcode(), book);
+    try {
+      mapper.writeValue(file, allBooks.values());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     return book;
   }
 
   public Book update(Book book) {
-    String sql = String.format(
-        "UPDATE %s SET (%s) = ('%s', '%s', %d, %d, %d, %d) WHERE barcode = '%s'",
-        TABLE,
-        DATA_FIELDS,
-        book.name(),
-        book.author(),
-        book.quantity(),
-        book.price().unscaledValue(),
-        book.antiqueReleaseYear().orElse(null),
-        book.scienceIndex().orElse(null),
-        book.barcode()
-    );
-    db.update(sql);
-    return book;
+    return create(book);
+  }
+
+  public void flush() {
+    allBooks.clear();
+  }
+
+  private void readFromFile() {
+    try {
+      Book[] books = mapper.readValue(file, Book[].class);
+      Arrays.stream(books).forEach(book -> allBooks.put(book.barcode(), book));
+    } catch (IOException e) {
+      //no file - no problem
+      System.out.print("");
+    }
   }
 }

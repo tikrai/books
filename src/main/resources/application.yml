@@ -1,8 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:15432/books
-    username: books
-    password: books
+    url: books.json
 
 management:
   endpoint:
@@ -19,4 +17,4 @@ server:
 spring:
   profiles: test
   datasource:
-    url: jdbc:postgresql://127.0.0.1:15432/books_test
+    url: books_test.json
