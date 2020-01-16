@@ -48,7 +48,7 @@ public class BooksRepository {
   public Book create(Book book) {
     allBooks.put(book.barcode(), book);
     try {
-      mapper.writeValue(file, allBooks.values());
+      mapper.writerWithDefaultPrettyPrinter().writeValue(file, allBooks.values());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
