@@ -17,18 +17,22 @@ import com.gmail.tikrai.books.request.BookRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class BooksServiceTest {
 
   private final BooksRepository booksRepository = mock(BooksRepository.class);
   private final BooksService booksService = new BooksService(booksRepository);
+  private final Book book = Fixture.book().build();
+
+  @BeforeEach
+  void setup() {
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
+  }
 
   @Test
   void shouldFindByBarcode() {
-    Book book = Fixture.book().build();
-    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
-
     Book actual = booksService.findByBarcode(book.barcode());
 
     assertThat(actual, is(book));
@@ -38,7 +42,6 @@ class BooksServiceTest {
 
   @Test
   void shouldNotFindByBarcode() {
-    Book book = Fixture.book().build();
     when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.empty());
 
     String message = assertThrows(
@@ -53,9 +56,6 @@ class BooksServiceTest {
 
   @Test
   void shouldGetTotalPrice() {
-    Book book = Fixture.book().build();
-    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
-
     BigDecimal actual = booksService.getTotalPrice(book.barcode());
 
     assertThat(actual, is(book.totalPrice()));
@@ -65,7 +65,7 @@ class BooksServiceTest {
 
   @Test
   void shouldCreateBook() {
-    Book book = Fixture.book().build();
+    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.empty());
     when(booksRepository.create(book)).thenReturn(book);
 
     Book actual = booksService.create(book);
@@ -78,8 +78,6 @@ class BooksServiceTest {
 
   @Test
   void shouldFailToCreateBookIfBarcodeAlreadyExists() {
-    Book book = Fixture.book().build();
-    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
     when(booksRepository.create(book)).thenReturn(book);
 
     String message = assertThrows(
@@ -95,9 +93,7 @@ class BooksServiceTest {
 
   @Test
   void shouldUpdateBook() {
-    Book book = Fixture.book().build();
     when(booksRepository.update(book)).thenReturn(book);
-    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
 
     Book actual = booksService.update(book.barcode(), book);
 
@@ -109,8 +105,6 @@ class BooksServiceTest {
 
   @Test
   void shouldUpdateBookFields() {
-    Book book = Fixture.book().build();
-    when(booksRepository.findByBarcode(book.barcode())).thenReturn(Optional.of(book));
     when(booksRepository.update(book)).thenReturn(book);
     HashMap<String, Object> updates = new HashMap<String, Object>() {};
 
