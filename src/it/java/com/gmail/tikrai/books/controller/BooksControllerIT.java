@@ -35,6 +35,19 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
+  void shouldFailToGetBookByBarcodeIfBarcodeIsInvalid() {
+    String barcodePath = String.format("%s/%s", Endpoint.BOOKS, "b");
+    Response response = given().get(barcodePath);
+
+    response.then()
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .body("status", equalTo(400))
+        .body("error", equalTo("Bad Request"))
+        .body("message", equalTo("'Path variable barcode' length must be between 2 and 255"))
+        .body("path", equalTo(barcodePath));
+  }
+
+  @Test
   void shouldFailToGetBookByBarcodeIfBarcodeDoNotExist() {
     Response response = given().get(barcodePath);
 
@@ -59,7 +72,20 @@ class BooksControllerIT extends IntegrationTestCase {
   }
 
   @Test
-  void shouldFailToGetTotalBookPriceByBarcode() {
+  void shouldFailToGetTotalBookPriceByBarcodeIfBarcodeIsInvalid() {
+    String barcodePath = String.format("%s/%s/%s", Endpoint.BOOKS, "b", "total-price");
+    Response response = given().get(barcodePath);
+
+    response.then()
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .body("status", equalTo(400))
+        .body("error", equalTo("Bad Request"))
+        .body("message", equalTo("'Path variable barcode' length must be between 2 and 255"))
+        .body("path", equalTo(barcodePath));
+  }
+
+  @Test
+  void shouldFailToGetTotalBookPriceByBarcodeIfBarcodeDoNotExist() {
     Response response = given().get(barcodePath.concat("/total-price"));
 
     response.then().statusCode(HttpStatus.NOT_FOUND.value());
@@ -137,6 +163,22 @@ class BooksControllerIT extends IntegrationTestCase {
         .body("status", equalTo(400))
         .body("error", equalTo("Bad Request"))
         .body("message", equalTo("'name' length must be between 2 and 255"))
+        .body("path", equalTo(barcodePath));
+    assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
+  }
+
+  @Test
+  void shouldFailToUpdateBookIfRequestIsToChangeBarcode() {
+    booksRepository.create(book);
+    Book newBook = Fixture.book().barcode("b1").build();
+
+    Response response = given().body(newBook).put(barcodePath);
+
+    response.then()
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .body("status", equalTo(400))
+        .body("error", equalTo("Bad Request"))
+        .body("message", equalTo("Modification of 'barcode' field is not allowed"))
         .body("path", equalTo(barcodePath));
     assertThat(booksRepository.findAll(), equalTo(Collections.singletonList(book)));
   }

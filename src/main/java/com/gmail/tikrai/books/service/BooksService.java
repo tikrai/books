@@ -39,8 +39,8 @@ public class BooksService {
     return booksRepository.create(book);
   }
 
-  public Book update(String barcode, Book book) {
-    findByBarcode(barcode);
+  public Book update(Book book) {
+    findByBarcode(book.barcode());
     return booksRepository.update(book);
   }
 

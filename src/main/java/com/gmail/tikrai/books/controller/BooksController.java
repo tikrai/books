@@ -6,6 +6,7 @@ import com.gmail.tikrai.books.request.BookRequest;
 import com.gmail.tikrai.books.response.TotalPriceResponse;
 import com.gmail.tikrai.books.service.BooksService;
 import com.gmail.tikrai.books.util.RestUtil.Endpoint;
+import com.gmail.tikrai.books.validation.validators.SizeValidator;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +34,7 @@ public class BooksController {
   public ResponseEntity<Book> findByBarcode(
       @PathVariable String barcode
   ) {
+    SizeValidator.range("Path variable barcode", barcode, 2, 255).validate();
     return new ResponseEntity<>(booksService.findByBarcode(barcode), HttpStatus.OK);
   }
 
@@ -40,6 +42,7 @@ public class BooksController {
   public ResponseEntity<TotalPriceResponse> getTotalPrice(
       @PathVariable String barcode
   ) {
+    SizeValidator.range("Path variable barcode", barcode, 2, 255).validate();
     TotalPriceResponse response = new TotalPriceResponse(booksService.getTotalPrice(barcode));
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -57,12 +60,13 @@ public class BooksController {
       @PathVariable String barcode,
       @RequestBody BookRequest request
   ) {
+    SizeValidator.range("Path variable barcode", barcode, 2, 255).validate();
     request.validate();
     Book book = request.toDomain();
     if (!book.barcode().equals(barcode)) {
       throw new ValidationException("Modification of 'barcode' field is not allowed");
     }
-    return new ResponseEntity<>(booksService.update(barcode, book), HttpStatus.OK);
+    return new ResponseEntity<>(booksService.update(book), HttpStatus.OK);
   }
 
   @PatchMapping(value = "/{barcode}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -70,6 +74,7 @@ public class BooksController {
       @PathVariable("barcode") String barcode,
       @RequestBody Map<String, Object> updates
   ) {
+    SizeValidator.range("Path variable barcode", barcode, 2, 255).validate();
     BookRequest request = booksService.updateRequest(barcode, updates);
     return update(barcode, request);
   }

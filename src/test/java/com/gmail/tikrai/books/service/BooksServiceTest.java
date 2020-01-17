@@ -95,7 +95,7 @@ class BooksServiceTest {
   void shouldUpdateBook() {
     when(booksRepository.update(book)).thenReturn(book);
 
-    Book actual = booksService.update(book.barcode(), book);
+    Book actual = booksService.update(book);
 
     assertThat(actual, is(book));
     verify(booksRepository).findByBarcode(book.barcode());

@@ -38,6 +38,17 @@ class BooksControllerTest {
   }
 
   @Test
+  void shouldFailToFindByBarcodeIfRequestIsInvalid() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> booksController.findByBarcode("b")
+    ).getMessage();
+
+    assertThat(message, equalTo("'Path variable barcode' length must be between 2 and 255"));
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
   void shouldGetTotalPrice() {
     when(booksService.getTotalPrice(book.barcode())).thenReturn(book.totalPrice());
 
@@ -47,6 +58,17 @@ class BooksControllerTest {
         new ResponseEntity<>(new TotalPriceResponse(book.totalPrice()), HttpStatus.OK);
     assertThat(actual, equalTo(expected));
     verify(booksService).getTotalPrice(book.barcode());
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
+  void shouldFailToGetTotalPriceIfRequestIsInvalid() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> booksController.getTotalPrice("b")
+    ).getMessage();
+
+    assertThat(message, equalTo("'Path variable barcode' length must be between 2 and 255"));
     verifyNoMoreInteractions(booksService);
   }
 
@@ -62,13 +84,38 @@ class BooksControllerTest {
   }
 
   @Test
+  void shouldFailToCreateBookIfRequestIsInvalid() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> booksController.create(Fixture.bookRequest().barcode("B").build())
+    ).getMessage();
+
+    assertThat(message, equalTo("'barcode' length must be between 2 and 255"));
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
   void shouldUpdateBook() {
-    when(booksService.update(book.barcode(), book)).thenReturn(book);
+    when(booksService.update(book)).thenReturn(book);
 
     ResponseEntity<Book> actual = booksController.update(book.barcode(), bookRequest);
 
     assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.OK)));
-    verify(booksService).update(book.barcode(), book);
+    verify(booksService).update(book);
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
+  void shouldFailToUpdateBookIfRequestIsInvalid() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> {
+          BookRequest bookRequest = Fixture.bookRequest().barcode("B").build();
+          booksController.update(book.barcode(), bookRequest);
+        }
+    ).getMessage();
+
+    assertThat(message, equalTo("'barcode' length must be between 2 and 255"));
     verifyNoMoreInteractions(booksService);
   }
 
@@ -88,13 +135,24 @@ class BooksControllerTest {
   void shouldUpdateBookField() {
     HashMap<String, Object> updates = new HashMap<String, Object>() {};
     when(booksService.updateRequest(book.barcode(), updates)).thenReturn(bookRequest);
-    when(booksService.update(book.barcode(), book)).thenReturn(book);
+    when(booksService.update(book)).thenReturn(book);
 
     ResponseEntity<Book> actual = booksController.updateField(book.barcode(), updates);
 
     assertThat(actual, equalTo(new ResponseEntity<>(book, HttpStatus.OK)));
     verify(booksService).updateRequest(book.barcode(), updates);
-    verify(booksService).update(book.barcode(), book);
+    verify(booksService).update(book);
+    verifyNoMoreInteractions(booksService);
+  }
+
+  @Test
+  void shouldFailToUpdateBookFieldIfRequestIsInvalid() {
+    String message = assertThrows(
+        ValidationException.class,
+        () -> booksController.updateField("b", new HashMap<String, Object>() {})
+    ).getMessage();
+
+    assertThat(message, equalTo("'Path variable barcode' length must be between 2 and 255"));
     verifyNoMoreInteractions(booksService);
   }
 }
